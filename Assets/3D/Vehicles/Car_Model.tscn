@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Assets/Shaders/psx.shader" type="Shader" id=1]
+[ext_resource path="res://Assets/Textures/Car_Textures/Car_Texture.png" type="Texture" id=2]
+[ext_resource path="res://Assets/3D/Vehicles/Car_Model.glb" type="PackedScene" id=3]
+
+[sub_resource type="ShaderMaterial" id=1]
+resource_local_to_scene = true
+shader = ExtResource( 1 )
+shader_param/tint_color = Color( 1, 1, 1, 1 )
+shader_param/specular_intensity = null
+shader_param/vertex_resolution = 256.0
+shader_param/cull_distance = 9999.0
+shader_param/uv_scale = Vector2( 1, 1 )
+shader_param/uv_offset = Vector2( 0, 0 )
+shader_param/uv_speed = Vector2( 0, -1 )
+shader_param/affine_texture_mapping = false
+shader_param/emissive = false
+shader_param/moving_uv = false
+shader_param/double_sided = false
+shader_param/stippled_transparent = false
+shader_param/albedoTex = ExtResource( 2 )
+
+[node name="Car_Model" instance=ExtResource( 3 )]
+
+[node name="Cube" parent="." index="0"]
+material/0 = SubResource( 1 )

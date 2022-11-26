@@ -1,0 +1,8 @@
+[gd_resource type="Curve3D" format=2]
+
+[resource]
+_data = {
+"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, 156.148, 2.19185, 39.9705, 0, 0, 0, 0, 0, 0, 188.804, -30.0393, 52.9944, 0, 0, 0, 0, 0, 0, 129.114, -20.1095, 53.6709, 0, 0, 0, 0, 0, 0, 156.148, 2.19185, 39.9705 ),
+"tilts": PoolRealArray( 0, 0, 0, 0 )
+}
+up_vector_enabled = false

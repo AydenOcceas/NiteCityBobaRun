@@ -1,0 +1,606 @@
+[gd_scene load_steps=25 format=2]
+
+[ext_resource path="res://src/Player/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/TestEnvironment/TestMap.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Main/Objective/ObjectiveManager.gd" type="Script" id=3]
+[ext_resource path="res://Assets/3D/PlayerCamera/PlayerCamera.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/Main/Objective/Objective.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Assets/3D/CharacterGeneral/WavingNPC/Waving_NPC.tscn" type="PackedScene" id=6]
+[ext_resource path="res://src/UI/UIInterface.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Assets/3D/Vehicles/CarPathCurves/Car_Curve_1.tres" type="Curve3D" id=8]
+[ext_resource path="res://Assets/3D/Vehicles/CarPathCurves/Car_Curve_2.tres" type="Curve3D" id=9]
+[ext_resource path="res://src/CarAI/CarFollow.gd" type="Script" id=10]
+[ext_resource path="res://src/CarAI/Car Standin.tscn" type="PackedScene" id=11]
+[ext_resource path="res://src/Main/GameManager.gd" type="Script" id=12]
+[ext_resource path="res://Assets/Audio/Bonkers-for-Arcades.mp3" type="AudioStream" id=13]
+[ext_resource path="res://src/Main/AudioManager.gd" type="Script" id=14]
+[ext_resource path="res://Assets/Shaders/psx.shader" type="Shader" id=15]
+[ext_resource path="res://src/Opening/Opening sweep.tres" type="Animation" id=16]
+[ext_resource path="res://Assets/Fonts/8-bit Arcade In.ttf" type="DynamicFontData" id=17]
+[ext_resource path="res://src/Main/RespawnManager.gd" type="Script" id=18]
+[ext_resource path="res://src/UI/MiniMap.tscn" type="PackedScene" id=19]
+
+[sub_resource type="ShaderMaterial" id=1]
+shader = ExtResource( 15 )
+shader_param/tint_color = Color( 0.745098, 1, 0.705882, 1 )
+shader_param/specular_intensity = null
+shader_param/vertex_resolution = 256.0
+shader_param/cull_distance = 9999.0
+shader_param/uv_scale = Vector2( 1, 1 )
+shader_param/uv_offset = Vector2( 0, 0 )
+shader_param/uv_speed = Vector2( 0, -1 )
+shader_param/affine_texture_mapping = true
+shader_param/emissive = false
+shader_param/moving_uv = false
+shader_param/double_sided = false
+shader_param/stippled_transparent = true
+
+[sub_resource type="GDScript" id=2]
+resource_name = "Opening Cutscene"
+script/source = "extends Node
+
+func _ready():
+	yield(owner, \"ready\")
+	get_tree().paused = true
+	
+
+
+func _on_AnimationPlayer_animation_finished(anim_name):
+	get_node(\"Instructions\").visible = false
+	get_tree().paused = false
+	get_parent().get_node(\"PlayerCamera/Camera\").current = true
+"
+
+[sub_resource type="Animation" id=3]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/path = NodePath("..:rotation_degrees:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"points": PoolRealArray( 0, -0.25, 0, 0.25, 0 ),
+"times": PoolRealArray( 0 )
+}
+tracks/1/type = "bezier"
+tracks/1/path = NodePath("..:rotation_degrees:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"points": PoolRealArray( 0, -0.25, 0, 0.25, 0 ),
+"times": PoolRealArray( 0 )
+}
+tracks/2/type = "bezier"
+tracks/2/path = NodePath("..:rotation_degrees:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"points": PoolRealArray( 0, -0.25, 0, 0.25, 0 ),
+"times": PoolRealArray( 0 )
+}
+
+[sub_resource type="DynamicFont" id=4]
+size = 32
+font_data = ExtResource( 17 )
+
+[sub_resource type="BoxShape" id=5]
+extents = Vector3( 300, 10, 300 )
+
+[node name="Game" type="Node"]
+
+[node name="PlayerCamera" parent="." instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 88.7978, 1.68235, 44.2537 )
+smooth_follow_speed = 7.0
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 88.7978, 1.68235, 44.2537 )
+
+[node name="Test_Map" parent="." instance=ExtResource( 2 )]
+
+[node name="ObjectiveManager" type="Node" parent="."]
+script = ExtResource( 3 )
+
+[node name="BB_Objective" parent="ObjectiveManager" instance=ExtResource( 5 )]
+transform = Transform( -6.22144e-08, 0, -1.4233, 0, 1, 0, 1.4233, 0, -6.22144e-08, 88.6808, 1.51848, 51.5569 )
+material/0 = SubResource( 1 )
+
+[node name="Objective" parent="ObjectiveManager" instance=ExtResource( 5 )]
+transform = Transform( 1.4233, 0, 0, 0, 1, 0, 0, 0, 1.4233, 62.9963, 0.903806, -6.58982 )
+
+[node name="Male_BaseModel_animations2" parent="ObjectiveManager/Objective" instance=ExtResource( 6 )]
+transform = Transform( 0.702593, 0, 0, 0, 1, 0, 0, 0, 0.702593, -1.55556, 0.139731, -0.383168 )
+
+[node name="Objective2" parent="ObjectiveManager" instance=ExtResource( 5 )]
+transform = Transform( -1.4233, 0, -2.14912e-07, 0, 1, 0, 2.14912e-07, 0, -1.4233, 33.9923, 1.09687, 6.7236 )
+
+[node name="Male_BaseModel_animations2" parent="ObjectiveManager/Objective2" instance=ExtResource( 6 )]
+transform = Transform( 0.702593, 0, 0, 0, 1, 0, 0, 0, 0.702593, -1.55556, 0.139731, -0.383168 )
+
+[node name="Objective3" parent="ObjectiveManager" instance=ExtResource( 5 )]
+transform = Transform( -1.4233, 0, -2.14912e-07, 0, 1, 0, 2.14912e-07, 0, -1.4233, -65.6797, 1.07231, 6.34444 )
+
+[node name="Male_BaseModel_animations2" parent="ObjectiveManager/Objective3" instance=ExtResource( 6 )]
+transform = Transform( 0.702593, 0, 0, 0, 1, 0, 0, 0, 0.702593, -1.55556, 0.139731, -0.383168 )
+
+[node name="Objective4" parent="ObjectiveManager" instance=ExtResource( 5 )]
+transform = Transform( -6.22144e-08, 0, -1.4233, 0, 1, 0, 1.4233, 0, -6.22144e-08, -77.5618, 1.16769, -34.9953 )
+
+[node name="Male_BaseModel_animations2" parent="ObjectiveManager/Objective4" instance=ExtResource( 6 )]
+transform = Transform( 0.702593, 0, 0, 0, 1, 0, 0, 0, 0.702593, -1.55556, 0.139731, -0.383168 )
+
+[node name="Objective5" parent="ObjectiveManager" instance=ExtResource( 5 )]
+transform = Transform( -6.22144e-08, 0, 1.4233, 0, 1, 0, -1.4233, 0, -6.22144e-08, -89.6569, 1.16912, -89.9256 )
+
+[node name="Male_BaseModel_animations2" parent="ObjectiveManager/Objective5" instance=ExtResource( 6 )]
+transform = Transform( 0.702593, 0, 0, 0, 1, 0, 0, 0, 0.702593, -1.55556, 0.139731, -0.383168 )
+
+[node name="Objective6" parent="ObjectiveManager" instance=ExtResource( 5 )]
+transform = Transform( 1.4233, 0, 0, 0, 1, 0, 0, 0, 1.4233, -57.3932, 0.914075, -104.381 )
+
+[node name="Male_BaseModel_animations2" parent="ObjectiveManager/Objective6" instance=ExtResource( 6 )]
+transform = Transform( 0.702593, 0, 0, 0, 1, 0, 0, 0, 0.702593, -1.55556, 0.139731, -0.383168 )
+
+[node name="Objective7" parent="ObjectiveManager" instance=ExtResource( 5 )]
+transform = Transform( 1.4233, 0, 0, 0, 1, 0, 0, 0, 1.4233, -18.3645, 0.869782, -104.612 )
+
+[node name="Male_BaseModel_animations2" parent="ObjectiveManager/Objective7" instance=ExtResource( 6 )]
+transform = Transform( 0.702593, 0, 0, 0, 1, 0, 0, 0, 0.702593, -1.55556, 0.139731, -0.383168 )
+
+[node name="Objective8" parent="ObjectiveManager" instance=ExtResource( 5 )]
+transform = Transform( -6.22144e-08, 0, 1.4233, 0, 1, 0, -1.4233, 0, -6.22144e-08, -6.30267, 0.880155, -63.2063 )
+
+[node name="Male_BaseModel_animations2" parent="ObjectiveManager/Objective8" instance=ExtResource( 6 )]
+transform = Transform( 0.702593, 0, 0, 0, 1, 0, 0, 0, 0.702593, -1.55556, 0.139731, -0.383168 )
+
+[node name="Objective9" parent="ObjectiveManager" instance=ExtResource( 5 )]
+transform = Transform( -6.22144e-08, 0, -1.4233, 0, 1, 0, 1.4233, 0, -6.22144e-08, 6.39851, 0.768784, 48.573 )
+
+[node name="Male_BaseModel_animations2" parent="ObjectiveManager/Objective9" instance=ExtResource( 6 )]
+transform = Transform( 0.702593, 0, 0, 0, 1, 0, 0, 0, 0.702593, -1.55556, 0.139731, -0.383168 )
+
+[node name="Objective10" parent="ObjectiveManager" instance=ExtResource( 5 )]
+transform = Transform( -6.22144e-08, 0, 1.4233, 0, 1, 0, -1.4233, 0, -6.22144e-08, -6.13392, 1.08436, 80.9027 )
+
+[node name="Male_BaseModel_animations2" parent="ObjectiveManager/Objective10" instance=ExtResource( 6 )]
+transform = Transform( 0.702593, 0, 0, 0, 1, 0, 0, 0, 0.702593, -1.55556, 0.139731, -0.383168 )
+
+[node name="Objective11" parent="ObjectiveManager" instance=ExtResource( 5 )]
+transform = Transform( -1.4233, 0, -2.14912e-07, 0, 1, 0, 2.14912e-07, 0, -1.4233, 34.8245, 0.6102, 104.785 )
+
+[node name="Male_BaseModel_animations2" parent="ObjectiveManager/Objective11" instance=ExtResource( 6 )]
+transform = Transform( 0.702593, 0, 0, 0, 1, 0, 0, 0, 0.702593, -1.55556, 0.139731, -0.383168 )
+
+[node name="Objective12" parent="ObjectiveManager" instance=ExtResource( 5 )]
+transform = Transform( 1.4233, 0, 0, 0, 1, 0, 0, 0, 1.4233, 64.7896, 0.988202, 91.8361 )
+
+[node name="Male_BaseModel_animations2" parent="ObjectiveManager/Objective12" instance=ExtResource( 6 )]
+transform = Transform( 0.702593, 0, 0, 0, 1, 0, 0, 0, 0.702593, -1.55556, 0.139731, -0.383168 )
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource( 12 )
+subpar_delivery_points = 250
+good_delivery_points = 500
+great_delivery_points = 700
+excellent_delivery_points = 1000
+perfect_delivery_points = 1600
+combo_modifier = 10
+flip_points = 30
+corkscrew_points = 30
+spin_points = 20
+boba_shake = 10.0
+boba_falloff = 1.0
+boba_superCharged_falloff = 2.0
+boba_rocked_threshold = 50.0
+boba_shaken_threshold = 100.0
+boba_vibrated_threshold = 150.0
+boba_superCharged_threshold = 200.0
+
+[node name="GameTimer" type="Timer" parent="."]
+wait_time = 180.0
+one_shot = true
+
+[node name="Interface" parent="." instance=ExtResource( 7 )]
+
+[node name="Map" parent="." instance=ExtResource( 19 )]
+visible = false
+position = Vector2( 321, 229 )
+rotation = 3.14159
+
+[node name="Car Path 1" type="Path" parent="."]
+curve = ExtResource( 8 )
+
+[node name="PathFollow" type="PathFollow" parent="Car Path 1"]
+transform = Transform( 0.999999, 0, 0, 0, 1, 0, 0, 0, 0.999999, 54.8954, 1.2331, -2.6439 )
+offset = 30.37
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = -10.0
+
+[node name="Car Standin" parent="Car Path 1/PathFollow" instance=ExtResource( 11 )]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
+ColorPick = 3
+
+[node name="PathFollow2" type="PathFollow" parent="Car Path 1"]
+transform = Transform( 0.999999, 0, 0, 0, 1, 0, 0, 0, 0.999999, 11.7863, 1.2331, -2.6439 )
+offset = 72.89
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = -10.0
+
+[node name="Car Standin" parent="Car Path 1/PathFollow2" instance=ExtResource( 11 )]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
+ColorPick = 2
+
+[node name="PathFollow3" type="PathFollow" parent="Car Path 1"]
+transform = Transform( 0.999999, 0, 0, 0, 1, 0, 0, 0, 0.999999, -18.6739, 1.2331, -2.6439 )
+offset = 103.26
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = -10.0
+
+[node name="Car Standin" parent="Car Path 1/PathFollow3" instance=ExtResource( 11 )]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
+
+[node name="PathFollow4" type="PathFollow" parent="Car Path 1"]
+transform = Transform( 0.999999, 0, 0, 0, 1, 0, 0, 0, 0.999999, -82.5305, 1.2331, -18.1016 )
+offset = 182.23
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = -10.0
+
+[node name="Car Standin" parent="Car Path 1/PathFollow4" instance=ExtResource( 11 )]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
+ColorPick = 2
+
+[node name="PathFollow5" type="PathFollow" parent="Car Path 1"]
+transform = Transform( 0.999999, 0, 0, 0, 1, 0, 0, 0, 0.999999, -82.5305, 1.2331, -66.7676 )
+offset = 230.83
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = -10.0
+
+[node name="Car Standin" parent="Car Path 1/PathFollow5" instance=ExtResource( 11 )]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
+ColorPick = 3
+
+[node name="PathFollow6" type="PathFollow" parent="Car Path 1"]
+transform = Transform( 0.999999, 0, 0, 0, 1, 0, 0, 0, 0.999999, -2.8678, 1.2331, -79.9787 )
+offset = 358.4
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = -10.0
+
+[node name="Car Standin" parent="Car Path 1/PathFollow6" instance=ExtResource( 11 )]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
+ColorPick = 2
+
+[node name="PathFollow7" type="PathFollow" parent="Car Path 1"]
+transform = Transform( 0.999999, 0, 0, 0, 1, 0, 0, 0, 0.999999, -2.7133, 8.75404, -14.3315 )
+offset = 425.42
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = -10.0
+
+[node name="Car Standin" parent="Car Path 1/PathFollow7" instance=ExtResource( 11 )]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
+
+[node name="PathFollow8" type="PathFollow" parent="Car Path 1"]
+transform = Transform( 0.999999, 0, 0, 0, 1, 0, 0, 0, 0.999999, -2.79167, 3.19756, 32.6732 )
+offset = 474.02
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = -10.0
+
+[node name="Car Standin" parent="Car Path 1/PathFollow8" instance=ExtResource( 11 )]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
+ColorPick = 2
+
+[node name="PathFollow9" type="PathFollow" parent="Car Path 1"]
+transform = Transform( 0.999999, 0, 0, 0, 1, 0, 0, 0, 0.999999, -2.03018, 1.2331, 68.9876 )
+offset = 510.47
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = -10.0
+
+[node name="Car Standin" parent="Car Path 1/PathFollow9" instance=ExtResource( 11 )]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
+ColorPick = 3
+
+[node name="PathFollow10" type="PathFollow" parent="Car Path 1"]
+transform = Transform( 0.999999, 0, 0, 0, 1, 0, 0, 0, 0.999999, 41.6386, 1.2331, 99.6429 )
+offset = 583.37
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = -10.0
+
+[node name="Car Standin" parent="Car Path 1/PathFollow10" instance=ExtResource( 11 )]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
+ColorPick = 2
+
+[node name="PathFollow11" type="PathFollow" parent="Car Path 1"]
+transform = Transform( 0.999999, 0, 0, 0, 1, 0, 0, 0, 0.999999, 85.1948, 1.2331, 57.1938 )
+offset = 668.41
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = -10.0
+
+[node name="Car Standin" parent="Car Path 1/PathFollow11" instance=ExtResource( 11 )]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
+ColorPick = 1
+
+[node name="Car Path 2" type="Path" parent="."]
+curve = ExtResource( 9 )
+
+[node name="PathFollow" type="PathFollow" parent="Car Path 2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4.7505, 1.2331, -52.9508 )
+offset = 95.37
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = 10.0
+
+[node name="Car Standin" parent="Car Path 2/PathFollow" instance=ExtResource( 11 )]
+transform = Transform( 0.994737, 0, 0, 0, 0.994737, 0, 0, 0, 0.994737, 0, 0, 0 )
+ColorPick = 3
+
+[node name="PathFollow2" type="PathFollow" parent="Car Path 2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -31.2176, 1.2331, -101.063 )
+offset = 179.52
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = 10.0
+
+[node name="Car Standin" parent="Car Path 2/PathFollow2" instance=ExtResource( 11 )]
+ColorPick = 2
+
+[node name="PathFollow3" type="PathFollow" parent="Car Path 2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -87.3703, 1.2331, -44.2773 )
+offset = 292.68
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = 10.0
+
+[node name="Car Standin" parent="Car Path 2/PathFollow3" instance=ExtResource( 11 )]
+
+[node name="PathFollow4" type="PathFollow" parent="Car Path 2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -73.5364, 1.2331, 3.7818 )
+offset = 354.39
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = 10.0
+
+[node name="Car Standin" parent="Car Path 2/PathFollow4" instance=ExtResource( 11 )]
+ColorPick = 2
+
+[node name="PathFollow5" type="PathFollow" parent="Car Path 2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -45.0503, 1.2331, 3.7818 )
+offset = 382.44
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = 10.0
+
+[node name="Car Standin" parent="Car Path 2/PathFollow5" instance=ExtResource( 11 )]
+
+[node name="PathFollow6" type="PathFollow" parent="Car Path 2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 39.7206, 1.2331, 3.7818 )
+offset = 466.59
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = 10.0
+
+[node name="Car Standin" parent="Car Path 2/PathFollow6" instance=ExtResource( 11 )]
+ColorPick = 2
+
+[node name="PathFollow7" type="PathFollow" parent="Car Path 2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 79.8707, 1.2331, 36.5618 )
+offset = 539.52
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = 10.0
+
+[node name="Car Standin" parent="Car Path 2/PathFollow7" instance=ExtResource( 11 )]
+
+[node name="PathFollow8" type="PathFollow" parent="Car Path 2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 53.074, 1.2331, 93.5488 )
+offset = 623.67
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = 10.0
+
+[node name="Car Standin" parent="Car Path 2/PathFollow8" instance=ExtResource( 11 )]
+ColorPick = 3
+
+[node name="PathFollow9" type="PathFollow" parent="Car Path 2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 9.99357, 1.2331, 93.5488 )
+offset = 667.12
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = 10.0
+
+[node name="Car Standin" parent="Car Path 2/PathFollow9" instance=ExtResource( 11 )]
+ColorPick = 3
+
+[node name="PathFollow10" type="PathFollow" parent="Car Path 2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4.7505, 1.2331, 56.3986 )
+offset = 709.54
+rotation_mode = 0
+script = ExtResource( 10 )
+speed = 10.0
+
+[node name="Car Standin" parent="Car Path 2/PathFollow10" instance=ExtResource( 11 )]
+ColorPick = 2
+
+[node name="BGMusic" type="AudioStreamPlayer" parent="."]
+pause_mode = 2
+stream = ExtResource( 13 )
+volume_db = -13.108
+autoplay = true
+
+[node name="SFXManager" type="Node" parent="."]
+script = ExtResource( 14 )
+
+[node name="Intro" type="Spatial" parent="."]
+pause_mode = 2
+script = SubResource( 2 )
+
+[node name="Camera" type="Camera" parent="Intro"]
+transform = Transform( 0.79893, 0.285922, -0.529112, 1.49012e-07, 0.879765, 0.475409, 0.601424, -0.379819, 0.70287, 92.7328, 13.595, -25.1885 )
+current = true
+far = 277.9
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Intro"]
+root_node = NodePath("../Camera")
+autoplay = "Opening sweep"
+"anims/Opening sweep" = ExtResource( 16 )
+anims/RESET = SubResource( 3 )
+
+[node name="Instructions" type="Label" parent="Intro"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -160.5
+margin_top = -100.0
+margin_right = 160.5
+margin_bottom = 17.0
+custom_fonts/font = SubResource( 4 )
+text = "The Boba shaking Machine at Bonbas Boba is on the frits, do tricks as you deliver the Boba to shake up the boba and earn points"
+autowrap = true
+
+[node name="RespawnManager" type="Node" parent="."]
+script = ExtResource( 18 )
+
+[node name="P1" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 84.9925, 2.06651, -5.22297 )
+
+[node name="P2" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 66.2443, 2.06651, -5.22297 )
+
+[node name="P3" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 45.8486, 2.06651, -5.22297 )
+
+[node name="P4" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 26.5188, 2.06651, -5.22297 )
+
+[node name="P5" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -26.8623, 2.06651, -3.81873 )
+
+[node name="P6" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -46.8064, 2.06651, -3.81873 )
+
+[node name="P7" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -74.886, 2.06651, -3.81873 )
+
+[node name="P8" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -78.252, 2.06651, -13.3767 )
+
+[node name="P9" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -78.252, 2.06651, -28.4356 )
+
+[node name="P10" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -78.252, 2.06651, -47.2052 )
+
+[node name="P11" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -78.252, 2.06651, -68.4297 )
+
+[node name="P12" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -64.7778, 2.06651, -91.6666 )
+
+[node name="P13" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -37.5933, 2.06651, -93.1869 )
+
+[node name="P14" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -11.8723, 2.06651, -92.8587 )
+
+[node name="P15" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5.56787, 2.06651, -78.8209 )
+
+[node name="P16" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5.05558, 2.06651, -53.4139 )
+
+[node name="P17" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5.13728, 2.16429, -102.296 )
+
+[node name="P18" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -17.866, 2.16429, -103.313 )
+
+[node name="P19" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -52.6818, 2.16429, -103.313 )
+
+[node name="P20" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -88.4801, 2.16429, -103.313 )
+
+[node name="P21" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -89.47, 2.16429, -67.5939 )
+
+[node name="P22" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -89.47, 2.16429, -25.8961 )
+
+[node name="P23" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -89.47, 2.16429, 0.789063 )
+
+[node name="P24" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -78.0349, 2.16429, 5.40621 )
+
+[node name="P25" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -50.6285, 2.16429, 5.50659 )
+
+[node name="P26" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 24.5238, 2.16429, 5.68194 )
+
+[node name="P27" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 55.5132, 2.16429, 5.59449 )
+
+[node name="P28" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 78.2625, 2.16429, 7.22526 )
+
+[node name="P29" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 89.2613, 2.16429, 7.22526 )
+
+[node name="P30" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 88.1822, 2.16429, 26.6673 )
+
+[node name="P31" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 88.2495, 2.16429, 44.1846 )
+
+[node name="P32" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 87.8812, 2.16429, 66.6833 )
+
+[node name="P33" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 87.6072, 2.16429, 90.5164 )
+
+[node name="P34" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 81.9242, 2.16429, 104.07 )
+
+[node name="P35" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 63.5244, 2.16429, 104.626 )
+
+[node name="P36" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 46.0511, 2.16429, 104.626 )
+
+[node name="P37" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 18.5737, 2.16429, 104.626 )
+
+[node name="P38" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4.14977, 2.16429, 104.468 )
+
+[node name="P39" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -6.27375, 2.16429, 77.5494 )
+
+[node name="P40" type="Spatial" parent="RespawnManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -6.13086, 2.16429, 51.21 )
+
+[node name="Death Plane" type="Area" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -60.8391, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Death Plane"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 37.8703, 0 )
+shape = SubResource( 5 )
+
+[connection signal="timeout" from="GameTimer" to="ObjectiveManager" method="_on_GameTimer_timeout"]
+[connection signal="animation_finished" from="Intro/AnimationPlayer" to="Intro" method="_on_AnimationPlayer_animation_finished"]
+[connection signal="body_entered" from="Death Plane" to="RespawnManager" method="_on_Area_body_entered"]

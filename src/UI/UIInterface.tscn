@@ -1,0 +1,268 @@
+[gd_scene load_steps=20 format=2]
+
+[ext_resource path="res://Assets/Textures/UI/Boba/Boba.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Fonts/04B_30__.TTF" type="DynamicFontData" id=2]
+[ext_resource path="res://Assets/Fonts/8-bit Arcade In.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://src/UI/Shake.tres" type="Animation" id=4]
+[ext_resource path="res://Assets/Textures/UI/Sentiment/sentiment_background.png" type="Texture" id=5]
+[ext_resource path="res://Assets/Textures/UI/Sentiment/sentiment_happy2.png" type="Texture" id=6]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Control
+
+var timer: Timer
+var game_manager: Node
+
+func _ready():
+	yield(owner, \"ready\")
+	timer = get_parent().get_node(\"GameTimer\")
+	game_manager = get_parent().get_node(\"GameManager\")
+
+"
+
+[sub_resource type="DynamicFont" id=7]
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends Label
+
+var cont: int = 1
+
+func trick_display(trick: String):
+	if trick == self.get_text().substr(0, trick.length()) && trick != \" \":
+		cont += 1
+		self.set_text(str(trick, \" X\", cont))
+	else:
+		cont = 1
+		self.set_text(trick)
+	
+"
+
+[sub_resource type="DynamicFont" id=8]
+size = 32
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=9]
+resource_name = "Score Add"
+script/source = "extends Label
+
+export var feedback_time: int
+
+func push_queue(points: int):
+	if(get_child_count() > 0):
+		get_child(0).stop()
+	add_color_override(\"font_color\", Color(1,1,1))
+	self.set_text(str(points))
+
+func end_queue(good: bool):
+	if good:
+		add_color_override(\"font_color\", Color(0,1,0))
+	else:
+		add_color_override(\"font_color\", Color(1,0,0))
+	
+	var t = Timer.new()
+	t.set_wait_time(feedback_time)
+	t.set_one_shot(true)
+	self.add_child(t)
+	t.start()
+	yield(t, \"timeout\")
+	t.queue_free()
+	
+	self.set_text(\"\")
+	
+	
+"
+
+[sub_resource type="DynamicFont" id=4]
+size = 10
+font_data = ExtResource( 2 )
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends Label
+
+func _process(delta):
+	var time = self.get_parent().timer.get_time_left()
+	var minutes: int = time / 60
+	var seconds: int = fmod(time, 60)
+	if str(seconds).length() == 1:
+		self.set_text(str(\"Time Remaining: \", minutes, \":0\", seconds))
+	else:
+		self.set_text(str(\"Time Remaining: \", minutes, \":\", seconds))
+"
+
+[sub_resource type="DynamicFont" id=5]
+size = 12
+font_data = ExtResource( 2 )
+
+[sub_resource type="GDScript" id=6]
+resource_name = "Score"
+script/source = "extends Label
+
+
+func _process(delta):
+	var points = get_parent().game_manager.points
+	self.set_text(str(\"Score: \", points))
+"
+
+[sub_resource type="DynamicFont" id=10]
+size = 24
+font_data = ExtResource( 3 )
+
+[sub_resource type="GDScript" id=11]
+resource_name = "Notification System"
+script/source = "extends Label
+
+func display_notification(notif: String, time: int):
+	var t = Timer.new()
+	t.set_wait_time(time)
+	t.set_one_shot(true)
+	self.add_child(t)
+	t.start()
+	
+	self.text = notif
+	visible = true
+	
+	yield(t, \"timeout\")
+	t.queue_free()
+	
+	visible = false
+"
+
+[sub_resource type="GDScript" id=12]
+resource_name = "Sentiment Notification"
+script/source = "extends Sprite
+
+func display_notification(sentiment: int, time: int):
+	var t = Timer.new()
+	t.set_wait_time(time)
+	t.set_one_shot(true)
+	self.add_child(t)
+	t.start()
+	
+	match sentiment:
+		# anger
+		0:
+			get_node(\"Sentiment\").texture = load(\"res://Assets/Textures/UI/Sentiment/sentiment_anger.png\")
+			get_node(\"Text\").text = \"Late\"
+		# disgust
+		1:
+			get_node(\"Sentiment\").texture = load(\"res://Assets/Textures/UI/Sentiment/sentiment_disgust.png\")
+			get_node(\"Text\").text = \"Not Shaken Enough\"
+		# happy1
+		2:
+			get_node(\"Sentiment\").texture = load(\"res://Assets/Textures/UI/Sentiment/sentiment_happy1.png\")
+			get_node(\"Text\").text = \"Good Delivery\"
+		# happy2
+		3:
+			get_node(\"Sentiment\").texture = load(\"res://Assets/Textures/UI/Sentiment/sentiment_happy2.png\")
+			get_node(\"Text\").text = \"Great Delivery\"
+		# happy2
+		4:
+			get_node(\"Sentiment\").texture = load(\"res://Assets/Textures/UI/Sentiment/sentiment_happy2.png\")
+			get_node(\"Text\").text = \"Excellent Delivery\"
+		# happy3
+		5:
+			get_node(\"Sentiment\").texture = load(\"res://Assets/Textures/UI/Sentiment/sentiment_happy3.png\")
+			get_node(\"Text\").text = \"Superb Delivery\"
+	
+	visible = true
+	
+	yield(t, \"timeout\")
+	t.queue_free()
+	
+	visible = false
+"
+
+[sub_resource type="DynamicFont" id=13]
+font_data = ExtResource( 3 )
+
+[node name="Interface" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 426, 64 )
+script = SubResource( 1 )
+
+[node name="Boba" type="Sprite" parent="."]
+visible = false
+position = Vector2( 42.125, 83.5 )
+texture = ExtResource( 1 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Boba"]
+anims/Shake = ExtResource( 4 )
+
+[node name="Trick" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -55.0
+margin_top = -41.0
+margin_right = 55.0
+margin_bottom = -27.0
+rect_pivot_offset = Vector2( 166, -439 )
+custom_fonts/font = SubResource( 7 )
+align = 1
+script = SubResource( 2 )
+
+[node name="PointAdd" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -55.0
+margin_top = -35.0
+margin_right = 55.0
+margin_bottom = -13.0
+rect_pivot_offset = Vector2( 166, -439 )
+custom_fonts/font = SubResource( 8 )
+align = 1
+script = SubResource( 9 )
+feedback_time = 1
+
+[node name="Timer" type="Label" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -155.0
+margin_top = 13.0
+margin_right = -18.0
+margin_bottom = 27.0
+custom_fonts/font = SubResource( 4 )
+align = 2
+script = SubResource( 3 )
+
+[node name="Score" type="Label" parent="."]
+margin_left = 7.0
+margin_top = 16.0
+margin_right = 58.0
+margin_bottom = 30.0
+custom_fonts/font = SubResource( 5 )
+script = SubResource( 6 )
+
+[node name="Notification" type="Label" parent="."]
+anchor_right = 1.0
+margin_top = 20.0
+margin_bottom = 31.0
+custom_fonts/font = SubResource( 10 )
+align = 1
+script = SubResource( 11 )
+
+[node name="SentimentBackground" type="Sprite" parent="."]
+visible = false
+position = Vector2( 512.563, 103 )
+scale = Vector2( 1.12622, 1 )
+texture = ExtResource( 5 )
+script = SubResource( 12 )
+
+[node name="Sentiment" type="Sprite" parent="SentimentBackground"]
+position = Vector2( -53.775, -15 )
+scale = Vector2( 0.887926, 1 )
+texture = ExtResource( 6 )
+
+[node name="Text" type="Label" parent="SentimentBackground"]
+margin_left = -33.3527
+margin_top = -29.0
+margin_right = 68.6473
+margin_bottom = 40.0
+custom_fonts/font = SubResource( 13 )
+text = "Good Delivery"
+autowrap = true

@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/PlayerCamera/Camera_follow.gd" type="Script" id=1]
+
+[sub_resource type="GDScript" id=1]
+resource_name = "Camera"
+script/source = "extends Camera
+
+var player: = Player
+
+func _ready():
+	yield(owner, \"ready\")
+	player = get_parent().get_player()
+
+func _process(delta):
+	self.look_at(player.transform.origin, Vector3.UP)
+"
+
+[node name="CameraFollow" type="Spatial"]
+script = ExtResource( 1 )
+smooth_follow_speed = 15.0
+velocity_to_rotate_threshold = 1.0
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( -1, 5.27071e-08, -1.41498e-07, 0, 0.937099, 0.349063, 1.50996e-07, 0.349063, -0.937099, -1.39139e-07, 1.48147, -3.26577 )
+script = SubResource( 1 )
